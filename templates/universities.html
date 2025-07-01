@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+
+{% block title %}Universities - StudyFlow{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3 col-lg-2 px-0">
+            <div class="sidebar">
+                <div class="p-3">
+                    <h5 class="text-white mb-3">
+                        <i class="fas fa-university me-2"></i>
+                        Universities
+                    </h5>
+                    <nav class="nav flex-column">
+                        <a class="nav-link" href="{{ url_for('dashboard') }}">
+                            <i class="fas fa-home me-2"></i>Overview
+                        </a>
+                        <a class="nav-link active" href="{{ url_for('universities') }}">
+                            <i class="fas fa-university me-2"></i>Universities
+                        </a>
+                        <a class="nav-link" href="{{ url_for('applications') }}">
+                            <i class="fas fa-tasks me-2"></i>Applications
+                        </a>
+                        <a class="nav-link" href="{{ url_for('documents') }}">
+                            <i class="fas fa-file-alt me-2"></i>Documents
+                        </a>
+                        <a class="nav-link" href="{{ url_for('test_scores') }}">
+                            <i class="fas fa-chart-line me-2"></i>Test Scores
+                        </a>
+                        <a class="nav-link" href="{{ url_for('scholarships') }}">
+                            <i class="fas fa-award me-2"></i>Scholarships
+                        </a>
+                    </nav>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-md-9 col-lg-10">
+            <div class="p-4">
+                <h2 class="mb-4">
+                    <i class="fas fa-search me-2"></i>
+                    Find Universities & Programs
+                </h2>
+
+                <!-- Search Filters -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <form method="GET" class="row g-3">
+                            <div class="col-md-3">
+                                <label for="country" class="form-label">Country</label>
+                                <select class="form-select" id="country" name="country">
+                                    <option value="">All Countries</option>
+                                    {% for country in countries %}
+                                        <option value="{{ country }}" {% if request.args.get('country') == country %}selected{% endif %}>
+                                            {{ country }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="course_type" class="form-label">Course Type</label>
+                                <select class="form-select" id="course_type" name="course_type">
+                                    <option value="">All Types</option>
+                                    {% for course_type in course_types %}
+                                        <option value="{{ course_type }}" {% if request.args.get('course_type') == course_type %}selected{% endif %}>
+                                            {{ course_type }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="max_tuition" class="form-label">Max Tuition ($)</label>
+                                <input type="number" class="form-control" id="max_tuition" name="max_tuition" 
+                                       value="{{ request.args.get('max_tuition', '') }}" placeholder="e.g., 50000">
+                            </div>
+                            <div class="col-md-3 d-flex align-items-end">
+                                <button type="submit" class="btn btn-primary w-100">
+                                    <i class="fas fa-filter me-2"></i>Filter
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Programs List -->
+                <div class="row">
+                    {% for program in programs %}
+                        <div class="col-lg-6 mb-4">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-start mb-3">
+                                        <h5 class="card-title mb-0">{{ program.name }}</h5>
+                                        <span class="badge bg-primary">{{ program.course_type }}</span>
+                                    </div>
+                                    
+                                    <h6 class="text-primary mb-2">
+                                        <i class="fas fa-university me-1"></i>
+                                        {{ program.university.name }}
+                                    </h6>
+                                    
+                                    <div class="row text-sm mb-3">
+                                        <div class="col-6">
+                                            <i class="fas fa-globe me-1 text-muted"></i>
+                                            {{ program.university.country }}
+                                        </div>
+                                        <div class="col-6">
+                                            <i class="fas fa-clock me-1 text-muted"></i>
+                                            {{ program.duration }}
+                                        </div>
+                                        <div class="col-6">
+                                            <i class="fas fa-calendar me-1 text-muted"></i>
+                                            Deadline: {{ program.deadline.strftime('%b %d, %Y') }}
+                                        </div>
+                                        <div class="col-6">
+                                            <i class="fas fa-dollar-sign me-1 text-muted"></i>
+                                            {% if program.tuition_fees %}
+                                                ${{ "{:,.0f}".format(program.tuition_fees) }}
+                                            {% else %}
+                                                Contact University
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="d-flex gap-2">
+                                        <a href="{{ url_for('program_detail', program_id=program.id) }}" 
+                                           class="btn btn-outline-primary btn-sm">
+                                            <i class="fas fa-info-circle me-1"></i>Details
+                                        </a>
+                                        <a href="{{ url_for('apply_program', program_id=program.id) }}" 
+                                           class="btn btn-primary btn-sm">
+                                            <i class="fas fa-paper-plane me-1"></i>Apply
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                {% if not programs %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                        <h4>No programs found</h4>
+                        <p class="text-muted">Try adjusting your search filters</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

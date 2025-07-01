@@ -1,0 +1,184 @@
+{% extends "base.html" %}
+
+{% block title %}{{ program.name }} - StudyFlow{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="{{ url_for('universities') }}">Universities</a></li>
+            <li class="breadcrumb-item active">{{ program.name }}</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="mb-0">{{ program.name }}</h3>
+                    <h5 class="text-primary mb-0">{{ program.university.name }}</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h6><i class="fas fa-globe me-2"></i>Country</h6>
+                            <p>{{ program.university.country }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6><i class="fas fa-clock me-2"></i>Duration</h6>
+                            <p>{{ program.duration }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6><i class="fas fa-calendar me-2"></i>Application Deadline</h6>
+
+                            <p class="{% if program.deadline < today %}
+                                    text-danger
+                                {% elif (program.deadline - today).days <= 30 %}
+                                    text-warning
+                                {% else %}
+                                    text-default
+                                {% endif %}">
+                                {{ program.name }}
+                            </p>
+
+                            <p>
+                                {{ program.deadline.strftime('%B %d, %Y') }}
+                                {% set days_left = (program.deadline - today).days %}
+                                {% if days_left >= 0 %}
+                                    <small>({{ days_left }} days left)</small>
+                                {% else %}
+                                    <small>(Deadline passed)</small>
+                                {% endif %}
+                            </p>
+
+
+                                {{ program.deadline.strftime('%B %d, %Y') }}
+                                {% set days_left = (program.deadline - today).days %}
+                                {% if days_left >= 0 %}
+                                    <small>({{ days_left }} days left)</small>
+                                {% else %}
+                                    <small>(Deadline passed)</small>
+                                {% endif %}
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6><i class="fas fa-dollar-sign me-2"></i>Tuition Fees</h6>
+                            <p>
+                                {% if program.tuition_fees %}
+                                    ${{ "{:,.0f}".format(program.tuition_fees) }} per year
+                                {% else %}
+                                    Contact university for details
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <h6><i class="fas fa-graduation-cap me-2"></i>Program Type</h6>
+                        <span class="badge bg-primary fs-6">{{ program.course_type }}</span>
+                    </div>
+
+                    {% if program.university.ranking %}
+                    <div class="mb-4">
+                        <h6><i class="fas fa-trophy me-2"></i>University Ranking</h6>
+                        <p>#{{ program.university.ranking }} globally</p>
+                    </div>
+                    {% endif %}
+
+                    {% if program.university.website %}
+                    <div class="mb-4">
+                        <h6><i class="fas fa-link me-2"></i>University Website</h6>
+                        <a href="{{ program.university.website }}" target="_blank" class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-external-link-alt me-1"></i>Visit Website
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        {% if program.deadline >= today %}
+                            <a href="{{ url_for('apply_program', program_id=program.id) }}" 
+                               class="btn btn-primary">
+                                <i class="fas fa-paper-plane me-2"></i>Apply Now
+                            </a>
+                        {% else %}
+                            <button class="btn btn-secondary" disabled>
+                                <i class="fas fa-clock me-2"></i>Application Closed
+                            </button>
+                        {% endif %}
+                        
+                        <button class="btn btn-outline-success" data-id="{{ program.id }}" onclick="saveProgramFromButton(this)">
+                            <i class="fas fa-bookmark me-2"></i>Save Program
+                        </button>
+
+                        
+                        <a href="{{ url_for('universities') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Back to Search
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h6 class="mb-0">Application Checklist</h6>
+                </div>
+                <div class="card-body">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="transcripts">
+                        <label class="form-check-label" for="transcripts">
+                            Academic Transcripts
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="sop">
+                        <label class="form-check-label" for="sop">
+                            Statement of Purpose
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="lor">
+                        <label class="form-check-label" for="lor">
+                            Letters of Recommendation
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="test-scores">
+                        <label class="form-check-label" for="test-scores">
+                            Test Scores (GRE/TOEFL)
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="resume">
+                        <label class="form-check-label" for="resume">
+                            Resume/CV
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function saveProgram(programId) {
+        // Placeholder for actual AJAX logic
+        alert('Program ' + programId + ' saved to your list!');
+    }
+
+    // Safely parse today's date from Flask to JS
+    const today = new Date("{{ today.strftime('%Y-%m-%d') }}");
+  // Ensures proper format for JavaScript
+</script>
+{% endblock %}

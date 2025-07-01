@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Documents Report{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h3 class="mb-3">Documents Uploaded by Students</h3>
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover">
+            <thead class="table-light">
+                <tr>
+                    <th>Student Name</th>
+                    <th>Email</th>
+                    <th>Document Type</th>
+                    <th>Upload Date</th>
+                    <th>View</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if documents %}
+                    {% for doc in documents %}
+                    <tr>
+                        <td>{{ doc.student.name }}</td>
+                        <td>{{ doc.student.email }}</td>
+                        <td>{{ doc.type }}</td>
+                        <td>{{ doc.upload_date.strftime('%b %d, %Y') }}</td>
+                        <td>
+                            <a href="{{ url_for('uploaded_document', filename=doc.file_path) }}" class="btn btn-sm btn-outline-primary" target="_blank">
+                                <i class="fas fa-eye"></i> View
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="5" class="text-center text-muted">No documents have been uploaded yet.</td>
+                    </tr>
+                {% endif %}
+            </tbody>
+
+        </table>
+    </div>
+</div>
+{% endblock %}

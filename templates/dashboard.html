@@ -1,0 +1,220 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - StudyFlow{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3 col-lg-2 px-0">
+            <div class="sidebar">
+                <div class="p-3">
+                    <h5 class="text-white mb-3">
+                        <i class="fas fa-tachometer-alt me-2"></i>
+                        Dashboard
+                    </h5>
+                    <nav class="nav flex-column">
+                        <a class="nav-link active" href="{{ url_for('dashboard') }}">
+                            <i class="fas fa-home me-2"></i>Overview
+                        </a>
+                        <a class="nav-link" href="{{ url_for('universities') }}">
+                            <i class="fas fa-university me-2"></i>Universities
+                        </a>
+                        <a class="nav-link" href="{{ url_for('applications') }}">
+                            <i class="fas fa-tasks me-2"></i>Applications
+                        </a>
+                        <a class="nav-link" href="{{ url_for('documents') }}">
+                            <i class="fas fa-file-alt me-2"></i>Documents
+                        </a>
+                        <a class="nav-link" href="{{ url_for('test_scores') }}">
+                            <i class="fas fa-chart-line me-2"></i>Test Scores
+                        </a>
+                        <a class="nav-link" href="{{ url_for('scholarships') }}">
+                            <i class="fas fa-award me-2"></i>Scholarships
+                        </a>
+                    </nav>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-md-9 col-lg-10">
+            <div class="p-4">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2>Welcome back, {{ current_user.name }}!</h2>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#quickAddModal">
+                            <i class="fas fa-plus me-2"></i>Quick Add
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Stats Cards -->
+                <div class="row mb-4">
+                    <div class="col-md-3">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <i class="fas fa-tasks fa-2x text-primary mb-2"></i>
+                                <h4>{{ applications|length }}</h4>
+                                <p class="text-muted mb-0">Total Applications</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <i class="fas fa-clock fa-2x text-warning mb-2"></i>
+                                <h4>{{ upcoming_deadlines|length }}</h4>
+                                <p class="text-muted mb-0">Upcoming Deadlines</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <i class="fas fa-check-circle fa-2x text-success mb-2"></i>
+                                <h4>{{ applications|selectattr('status', 'equalto', 'Submitted')|list|length }}</h4>
+                                <p class="text-muted mb-0">Submitted</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <i class="fas fa-star fa-2x text-info mb-2"></i>
+                                <h4>{{ applications|selectattr('status', 'equalto', 'Accepted')|list|length }}</h4>
+                                <p class="text-muted mb-0">Accepted</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <!-- Application Overview -->
+                    <div class="col-lg-8">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-chart-pie me-2"></i>
+                                    Application Overview
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                {% if applications %}
+                                    <div class="table-responsive">
+                                        <table class="table table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th>Program</th>
+                                                    <th>University</th>
+                                                    <th>Status</th>
+                                                    <th>Deadline</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for app in applications[:5] %}
+                                                <tr>
+                                                    <td>{{ app.program.name }}</td>
+                                                    <td>{{ app.program.university.name }}</td>
+                                                    <td>
+                                                        <span class="status-badge status-{{ app.status.lower().replace(' ', '-') }}">
+                                                            {{ app.status }}
+                                                        </span>
+                                                    </td>
+                                                    <td>{{ app.program.deadline.strftime('%b %d, %Y') }}</td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="text-center">
+                                        <a href="{{ url_for('applications') }}" class="btn btn-outline-primary">
+                                            View All Applications
+                                        </a>
+                                    </div>
+                                {% else %}
+                                    <div class="text-center py-4">
+                                        <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                                        <h5>No Applications Yet</h5>
+                                        <p class="text-muted">Start by searching for universities and programs</p>
+                                        <a href="{{ url_for('universities') }}" class="btn btn-primary">
+                                            <i class="fas fa-search me-2"></i>Search Universities
+                                        </a>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Upcoming Deadlines -->
+                    <div class="col-lg-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-calendar-alt me-2"></i>
+                                    Upcoming Deadlines
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                {% if upcoming_deadlines %}
+                                    {% for deadline in upcoming_deadlines %}
+                                        {% set days_left = (deadline.deadline - today).days %}
+                                        <div class="mb-3 p-3 rounded 
+                                            {% if days_left <= 7 %}deadline-urgent
+                                            {% elif days_left <= 30 %}deadline-soon
+                                            {% else %}deadline-normal{% endif %}">
+                                            <h6 class="mb-1">{{ deadline.program }}</h6>
+                                            <small class="text-muted">{{ deadline.university }}</small>
+                                            <div class="d-flex justify-content-between align-items-center mt-2">
+                                                <small>{{ deadline.deadline.strftime('%b %d, %Y') }}</small>
+                                                <span class="badge bg-secondary">{{ days_left }} days</span>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                {% else %}
+                                    <div class="text-center py-3">
+                                        <i class="fas fa-calendar-check fa-2x text-muted mb-2"></i>
+                                        <p class="text-muted mb-0">No upcoming deadlines</p>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Add Modal -->
+<div class="modal fade" id="quickAddModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Quick Add</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('universities') }}" class="btn btn-outline-primary">
+                        <i class="fas fa-university me-2"></i>Find & Apply to Programs
+                    </a>
+                    <a href="{{ url_for('test_scores') }}" class="btn btn-outline-success">
+                        <i class="fas fa-chart-line me-2"></i>Add Test Score
+                    </a>
+                    <a href="{{ url_for('documents') }}" class="btn btn-outline-info">
+                        <i class="fas fa-file-upload me-2"></i>Upload Document
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Set today's date for deadline calculations
+    const today = new Date('{{ today }}');
+</script>
+{% endblock %}

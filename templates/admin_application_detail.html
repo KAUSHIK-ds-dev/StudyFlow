@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Application Details - Admin{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h3>Application Details</h3>
+    <hr>
+
+    <p><strong>Student:</strong> {{ app.student.name }}</p>
+    <p><strong>Email:</strong> {{ app.student.email }}</p>
+    <p><strong>Phone:</strong> {{ app.student.phone or "N/A" }}</p>
+
+    <p><strong>Program:</strong> {{ app.program.name }}</p>
+    <p><strong>University:</strong> {{ app.program.university.name }}</p>
+    <p><strong>Course Type:</strong> {{ app.program.course_type }}</p>
+    <p><strong>Applied Date:</strong> {{ app.applied_date or "Not Submitted" }}</p>
+    <p><strong>Current Status:</strong> {{ app.status }}</p>
+
+    <hr>
+    <form method="POST">
+        <div class="mb-3">
+            <label for="status" class="form-label">Update Status</label>
+            <select class="form-select" name="status" id="status">
+                {% for status in ['Draft', 'Submitted', 'Accepted', 'Rejected'] %}
+                    <option value="{{ status }}" {% if app.status == status %}selected{% endif %}>{{ status }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <button type="submit" class="btn btn-success">Update Status</button>
+        <a href="{{ url_for('admin_panel') }}" class="btn btn-secondary">Back to Admin Panel</a>
+    </form>
+</div>
+{% endblock %}

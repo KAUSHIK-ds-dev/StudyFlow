@@ -1,0 +1,298 @@
+{% extends "base.html" %}
+
+{% block title %}Test Scores - StudyFlow{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3 col-lg-2 px-0">
+            <div class="sidebar">
+                <div class="p-3">
+                    <h5 class="text-white mb-3">
+                        <i class="fas fa-chart-line me-2"></i>
+                        Test Scores
+                    </h5>
+                    <nav class="nav flex-column">
+                        <a class="nav-link" href="{{ url_for('dashboard') }}">
+                            <i class="fas fa-home me-2"></i>Overview
+                        </a>
+                        <a class="nav-link" href="{{ url_for('universities') }}">
+                            <i class="fas fa-university me-2"></i>Universities
+                        </a>
+                        <a class="nav-link" href="{{ url_for('applications') }}">
+                            <i class="fas fa-tasks me-2"></i>Applications
+                        </a>
+                        <a class="nav-link" href="{{ url_for('documents') }}">
+                            <i class="fas fa-file-alt me-2"></i>Documents
+                        </a>
+                        <a class="nav-link active" href="{{ url_for('test_scores') }}">
+                            <i class="fas fa-chart-line me-2"></i>Test Scores
+                        </a>
+                        <a class="nav-link" href="{{ url_for('scholarships') }}">
+                            <i class="fas fa-award me-2"></i>Scholarships
+                        </a>
+                    </nav>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-md-9 col-lg-10">
+            <div class="p-4">
+                <h2 class="mb-4">
+                    <i class="fas fa-chart-line me-2"></i>
+                    Test Scores Management
+                </h2>
+
+                <div class="row">
+                    <!-- Add Test Score -->
+                    <div class="col-lg-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-plus me-2"></i>
+                                    Add Test Score
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <form method="POST" action="{{ url_for('add_test_score') }}">
+                                    <div class="mb-3">
+                                        <label for="test_type" class="form-label">Test Type</label>
+                                        <select class="form-select" id="test_type" name="test_type" required>
+                                            <option value="">Select test type</option>
+                                            <option value="GRE">GRE (Graduate Record Examination)</option>
+                                            <option value="GMAT">GMAT (Graduate Management Admission Test)</option>
+                                            <option value="TOEFL">TOEFL (Test of English as a Foreign Language)</option>
+                                            <option value="IELTS">IELTS (International English Language Testing System)</option>
+                                            <option value="SAT">SAT (Scholastic Assessment Test)</option>
+                                            <option value="ACT">ACT (American College Testing)</option>
+                                            <option value="LSAT">LSAT (Law School Admission Test)</option>
+                                            <option value="MCAT">MCAT (Medical College Admission Test)</option>
+                                            <option value="Other">Other</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label for="score" class="form-label">Score</label>
+                                        <input type="text" class="form-control" id="score" name="score" 
+                                               placeholder="e.g., 320, 7.5, 1450" required>
+                                        <div class="form-text">Enter your score as it appears on your scorecard</div>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label for="date_taken" class="form-label">Date Taken</label>
+                                        <input type="date" class="form-control" id="date_taken" name="date_taken" required>
+                                    </div>
+                                    
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-save me-2"></i>Add Score
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+
+                        <!-- Test Score Guidelines -->
+                        <div class="card mt-4">
+                            <div class="card-header">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    Score Guidelines
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="accordion" id="scoreGuidelines">
+                                    <div class="accordion-item">
+                                        <h2 class="accordion-header">
+                                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#gre">
+                                                GRE Scores
+                                            </button>
+                                        </h2>
+                                        <div id="gre" class="accordion-collapse collapse" data-bs-parent="#scoreGuidelines">
+                                            <div class="accordion-body">
+                                                <strong>Total Score:</strong> 260-340<br>
+                                                <strong>Good Score:</strong> 310+<br>
+                                                <strong>Excellent Score:</strong> 320+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="accordion-item">
+                                        <h2 class="accordion-header">
+                                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#toefl">
+                                                TOEFL Scores
+                                            </button>
+                                        </h2>
+                                        <div id="toefl" class="accordion-collapse collapse" data-bs-parent="#scoreGuidelines">
+                                            <div class="accordion-body">
+                                                <strong>Total Score:</strong> 0-120<br>
+                                                <strong>Good Score:</strong> 90+<br>
+                                                <strong>Excellent Score:</strong> 100+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="accordion-item">
+                                        <h2 class="accordion-header">
+                                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#ielts">
+                                                IELTS Scores
+                                            </button>
+                                        </h2>
+                                        <div id="ielts" class="accordion-collapse collapse" data-bs-parent="#scoreGuidelines">
+                                            <div class="accordion-body">
+                                                <strong>Total Score:</strong> 0-9<br>
+                                                <strong>Good Score:</strong> 6.5+<br>
+                                                <strong>Excellent Score:</strong> 7.5+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Test Scores List -->
+                    <div class="col-lg-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-list me-2"></i>
+                                    My Test Scores
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                {% if scores %}
+                                    <div class="row">
+                                        {% for score in scores %}
+                                            <div class="col-md-6 mb-3">
+                                                <div class="card border-primary">
+                                                    <div class="card-body text-center">
+                                                        <h5 class="card-title text-primary">{{ score.test_type }}</h5>
+                                                        <h3 class="text-dark">{{ score.score }}</h3>
+                                                        <p class="card-text">
+                                                            <small class="text-muted">
+                                                                Taken on {{ score.date_taken.strftime('%b %d, %Y') }}
+                                                            </small>
+                                                        </p>
+                                                        <div class="btn-group btn-group-sm">
+                                                            <button class="btn btn-outline-primary" onclick="editScore('{{ score.id }}')">
+                                                                <i class="fas fa-edit"></i>
+                                                            </button>
+                                                            <button class="btn btn-outline-danger" onclick="deleteScore('{{ score.id }}')">
+                                                                <i class="fas fa-trash"></i>
+                                                            </button>
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    <div class="text-center py-4">
+                                        <i class="fas fa-chart-line fa-3x text-muted mb-3"></i>
+                                        <h6>No test scores added yet</h6>
+                                        <p class="text-muted mb-0">Add your test scores to track your progress</p>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Score Upload -->
+                        <div class="card mt-4">
+                            <div class="card-header">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-upload me-2"></i>
+                                    Upload Scorecard (Optional)
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <form enctype="multipart/form-data">
+                                    <div class="mb-3">
+                                        <label for="scorecard" class="form-label">Official Scorecard</label>
+                                        <input type="file" class="form-control" id="scorecard" name="scorecard" 
+                                               accept=".pdf,.jpg,.jpeg,.png">
+                                        <div class="form-text">Upload official scorecard for verification (PDF, JPG, PNG)</div>
+                                    </div>
+                                    
+                                    <button type="submit" class="btn btn-outline-primary">
+                                        <i class="fas fa-cloud-upload-alt me-2"></i>Upload Scorecard
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function editScore(scoreId) {
+    const testType = prompt('Enter new test type:');
+    if (!testType) return;
+
+    const score = prompt('Enter new score:');
+    if (!score) return;
+
+    const dateTaken = prompt('Enter new date taken (YYYY-MM-DD):');
+    if (!dateTaken) return;
+
+    fetch(`/edit_score/${scoreId}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            test_type: testType,
+            score: score,
+            date_taken: dateTaken
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Score updated successfully!');
+            location.reload();
+        } else {
+            alert('Failed to update score: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred.');
+    });
+}
+
+function deleteScore(scoreId) {
+    if (confirm('Are you sure you want to delete this test score?')) {
+        fetch(`/delete_score/${scoreId}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => {
+            if (!response.ok) throw new Error("Network error");
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert(data.message || "Error deleting score");
+            }
+        })
+        .catch(error => {
+            console.error("Error:", error);
+            alert("Failed to delete the score.");
+        });
+    }
+}
+</script>
+
+{% endblock %}

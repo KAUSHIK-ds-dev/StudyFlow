@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+
+{% block title %}Faculty Dashboard - StudyFlow{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Faculty Sidebar -->
+        <div class="col-md-3 col-lg-2 px-0">
+            <div class="sidebar">
+                <div class="p-3">
+                    <h5 class="text-white mb-3">
+                        <i class="fas fa-chalkboard-teacher me-2"></i>
+                        Faculty Panel
+                    </h5>
+                    <nav class="nav flex-column">
+                        <a class="nav-link active" href="{{ url_for('faculty_dashboard') }}">
+                            <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                        </a>
+
+                    </nav>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-md-9 col-lg-10">
+            <div class="p-4">
+                <h2 class="mb-4">Welcome, {{ user.name }}!</h2>
+
+
+                <!-- LOR Requests -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-envelope me-2"></i>
+                            Letter of Recommendation Requests
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        {% if lor_requests %}
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Student</th>
+                                            <th>Email</th>
+                                            <th>Request Date</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for lor in lor_requests %}
+                                        <tr>
+                                            <td>{{ lor.student.name }}</td>
+                                            <td>{{ lor.student.email }}</td>
+                                            <td>{{ lor.request_date.strftime('%b %d, %Y') }}</td>
+                                            <td>
+                                                <span class="status-badge status-{{ lor.status.lower() }}">
+                                                    {{ lor.status }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <div class="btn-group btn-group-sm">
+                                                    {% if lor.status == 'Pending' %}
+                                                        <button class="btn btn-success" onclick="uploadLOR('{{ lor.id }}')">
+                                                            <i class="fas fa-upload me-1"></i>Upload LOR
+                                                        </button>
+                                                    {% else %}
+                                                        {% if lor.upload_path %}
+                                                            <a class="btn btn-outline-primary"
+                                                                href="{{ url_for('uploaded_file', filename=lor.upload_path) }}"
+                                                                download>
+                                                                <i class="fas fa-eye me-1"></i>Download
+                                                            </a>
+                                                        {% else %}
+                                                            <span class="text-muted">No LOR uploaded</span>
+                                                        {% endif %}
+                                                    {% endif %}
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <div class="text-center py-4">
+                                <i class="fas fa-envelope fa-3x text-muted mb-3"></i>
+                                <h5>No LOR requests yet</h5>
+                                <p class="text-muted">Students will be able to request letters of recommendation from you</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Upload LOR Modal -->
+
+<div class="modal fade" id="uploadLORModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Upload Letter of Recommendation</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="uploadLORForm" method="POST" enctype="multipart/form-data" action="{{ url_for('upload_lor') }}">
+          <input type="hidden" id="lor_id" name="lor_id">
+          <div class="mb-3">
+            <label for="lor_file" class="form-label">LOR Document</label>
+            <input type="file" name="lor_file" class="form-control" id="lor_file" accept=".pdf,.doc,.docx" required>
+            <div class="form-text">Upload the letter of recommendation (PDF, DOC, DOCX)</div>
+          </div>
+          <div class="mb-3">
+            <label for="lor_comments" class="form-label">Comments (Optional)</label>
+            <textarea class="form-control" name="lor_comments" id="lor_comments" rows="3"
+              placeholder="Any additional comments for the student"></textarea>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-success">Upload LOR</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+
+function uploadLOR(lorId) {
+    document.getElementById('lor_id').value = lorId;
+    const modal = new bootstrap.Modal(document.getElementById('uploadLORModal'));
+    modal.show();
+}
+
+function viewLOR(lorId) {
+    alert('View LOR for ID: ' + lorId);
+}
+</script>
+{% endblock %}

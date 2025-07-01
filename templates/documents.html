@@ -1,0 +1,197 @@
+{% extends "base.html" %}
+
+{% block title %}Documents - StudyFlow{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3 col-lg-2 px-0">
+            <div class="sidebar">
+                <div class="p-3">
+                    <h5 class="text-white mb-3">
+                        <i class="fas fa-file-alt me-2"></i>
+                        Documents
+                    </h5>
+                    <nav class="nav flex-column">
+                        <a class="nav-link" href="{{ url_for('dashboard') }}">
+                            <i class="fas fa-home me-2"></i>Overview
+                        </a>
+                        <a class="nav-link" href="{{ url_for('universities') }}">
+                            <i class="fas fa-university me-2"></i>Universities
+                        </a>
+                        <a class="nav-link" href="{{ url_for('applications') }}">
+                            <i class="fas fa-tasks me-2"></i>Applications
+                        </a>
+                        <a class="nav-link active" href="{{ url_for('documents') }}">
+                            <i class="fas fa-file-alt me-2"></i>Documents
+                        </a>
+                        <a class="nav-link" href="{{ url_for('test_scores') }}">
+                            <i class="fas fa-chart-line me-2"></i>Test Scores
+                        </a>
+                        <a class="nav-link" href="{{ url_for('scholarships') }}">
+                            <i class="fas fa-award me-2"></i>Scholarships
+                        </a>
+                    </nav>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-md-9 col-lg-10">
+            <div class="p-4">
+                <h2 class="mb-4">
+                    <i class="fas fa-file-alt me-2"></i>
+                    Document Management
+                </h2>
+
+                <div class="row">
+                    <!-- Upload Zone -->
+                    <div class="col-lg-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-cloud-upload-alt me-2"></i>
+                                    Upload Documents
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <form method="POST" action="{{ url_for('upload_document') }}" enctype="multipart/form-data">
+                                    <div class="mb-3">
+                                        <label for="type" class="form-label">Document Type</label>
+                                        <select class="form-select" id="type" name="type" required>
+                                            <option value="">Select document type</option>
+                                            <option value="SOP">Statement of Purpose</option>
+                                            <option value="Transcript">Academic Transcript</option>
+                                            <option value="Resume">Resume/CV</option>
+                                            <option value="Certificate">Certificate</option>
+                                            <option value="Other">Other</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label for="file" class="form-label">Choose File</label>
+                                        <input type="file" class="form-control" id="file" name="file" required
+                                               accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
+                                        <div class="form-text">Supported formats: PDF, DOC, DOCX, JPG, PNG (Max 10MB)</div>
+                                    </div>
+                                    
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-upload me-2"></i>Upload Document
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+
+                        <!-- LOR Request -->
+                        <div class="card mt-4">
+                            <div class="card-header">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-envelope me-2"></i>
+                                    Request Letter of Recommendation
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                               <form action="{{ url_for('request_lor') }}" method="POST">
+                                    <div class="mb-3">
+                                        <label for="facultySelect">Choose Faculty:</label>
+                                        <select name="faculty_id" id="facultySelect" class="form-select" required>
+                                            {% for faculty in faculties %}
+                                                <option value="{{ faculty.id }}">{{ faculty.name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Request LOR</button>
+                                </form>
+
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Documents List -->
+                    <div class="col-lg-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-folder me-2"></i>
+                                    My Documents
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                {% if documents %}
+                                    <div class="list-group list-group-flush">
+                                        {% for doc in documents %}
+                                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                                <div>
+                                                    <h6 class="mb-1">{{ doc.type }}</h6>
+                                                    <small class="text-muted">
+                                                        Uploaded: {{ doc.upload_date.strftime('%b %d, %Y') }}
+                                                    </small>
+                                                </div>
+                                                <div class="btn-group btn-group-sm">
+                                                    <a href="{{ url_for('static', filename='uploads/' + doc.file_path) }}" 
+                                                       class="btn btn-outline-primary" target="_blank">
+                                                        <i class="fas fa-eye"></i>
+                                                    </a>
+                                                    <a href="{{ url_for('static', filename='uploads/' + doc.file_path) }}" 
+                                                       class="btn btn-outline-success" download>
+                                                        <i class="fas fa-download"></i>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    <div class="text-center py-4">
+                                        <i class="fas fa-file-alt fa-3x text-muted mb-3"></i>
+                                        <h6>No documents uploaded yet</h6>
+                                        <p class="text-muted mb-0">Upload your first document using the form on the left</p>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- LOR Requests Status -->
+                        <div class="card mt-4">
+                            <div class="card-header">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-clipboard-list me-2"></i>
+                                    LOR Requests Status
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                {% if lor_requests %}
+                                    <div class="list-group list-group-flush">
+                                        {% for lor in lor_requests %}
+                                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                                <div>
+                                                    <h6 class="mb-1">{{ lor.faculty.name }}</h6>
+                                                    <small class="text-muted">{{ lor.faculty.email }}</small>
+                                                    <br>
+                                                    <small class="text-muted">
+                                                        Requested: {{ lor.request_date.strftime('%b %d, %Y') }}
+                                                    </small>
+                                                </div>
+                                                <span class="status-badge status-{{ lor.status.lower() }}">
+                                                    {{ lor.status }}
+                                                </span>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    <div class="text-center py-4">
+                                        <i class="fas fa-envelope fa-3x text-muted mb-3"></i>
+                                        <h6>No LOR requests yet</h6>
+                                        <p class="text-muted mb-0">Request letters of recommendation from faculty members</p>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

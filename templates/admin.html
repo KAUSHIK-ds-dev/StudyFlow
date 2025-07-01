@@ -1,0 +1,328 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Panel - StudyFlow{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Admin Sidebar -->
+        <div class="col-md-3 col-lg-2 px-0">
+            <div class="sidebar">
+                <div class="p-3">
+                    <h5 class="text-white mb-3">
+                        <i class="fas fa-cog me-2"></i>
+                        Admin Panel
+                    </h5>
+                    <nav class="nav flex-column">
+                        <a class="nav-link active" href="{{ url_for('admin_panel') }}">
+                            <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                        </a>
+                        <a class="nav-link" href="javascript:void(0);" onclick="showSection('universities-section')">
+                            <i class="fas fa-university me-2"></i>Universities
+                        </a>
+                        <a class="nav-link" href="javascript:void(0);" onclick="showSection('students-section')">
+                            <i class="fas fa-users me-2"></i>Students
+                        </a>
+                        <a class="nav-link" href="{{ url_for('admin_documents_report') }}">
+                            <i class="fas fa-chart-bar me-2"></i>Reports
+                        </a>
+                    </nav>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-md-9 col-lg-10">
+            <div id="dashboard-section">
+            <div class="p-4">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2>Admin Dashboard</h2>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addUniversityModal">
+                            <i class="fas fa-plus me-2"></i>Add University
+                        </button>
+                        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addProgramModal">
+                            <i class="fas fa-plus me-2"></i>Add Program
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Statistics Cards -->
+                <div class="row mb-4">
+                    <div class="col-md-3">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <i class="fas fa-users fa-2x text-primary mb-2"></i>
+                                <h4>{{ total_students }}</h4>
+                                <p class="text-muted mb-0">Total Students</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <i class="fas fa-tasks fa-2x text-success mb-2"></i>
+                                <h4>{{ total_applications }}</h4>
+                                <p class="text-muted mb-0">Total Applications</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <i class="fas fa-university fa-2x text-info mb-2"></i>
+                                <h4>{{ total_universities }}</h4>
+                                <p class="text-muted mb-0">Universities</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <i class="fas fa-graduation-cap fa-2x text-warning mb-2"></i>
+                                <h4>{{ total_programs }}</h4>
+                                <p class="text-muted mb-0">Programs</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Applications -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-clock me-2"></i>
+                            Recent Applications
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Student</th>
+                                        <th>Program</th>
+                                        <th>University</th>
+                                        <th>Status</th>
+                                        <th>Applied Date</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for app in recent_applications %}
+                                    <tr>
+                                        <td>{{ app.student.name }}</td>
+                                        <td>{{ app.program.name }}</td>
+                                        <td>{{ app.program.university.name }}</td>
+                                        <td>
+                                            <span class="status-badge status-{{ app.status.lower().replace(' ', '-') }}">
+                                                {{ app.status }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            {% if app.applied_date %}
+                                                {{ app.applied_date.strftime('%b %d, %Y') }}
+                                            {% else %}
+                                                Not submitted
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm">
+                                                <a class="btn btn-outline-primary" href="{{ url_for('admin_view_application', app_id=app.id) }}">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+
+            
+                                    
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                
+
+            </div>
+            </div>
+        <!-- Universities Section -->
+        <div id="universities-section" style="display: none;" class="mt-4">
+            <h4>All Universities</h4>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Country</th>
+                        <th>Ranking</th>
+                        <th>Website</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for uni in all_universities %}
+                    <tr>
+                        <td>{{ uni.name }}</td>
+                        <td>{{ uni.country }}</td>
+                        <td>{{ uni.ranking or 'N/A' }}</td>
+                        <td><a href="{{ uni.website }}" target="_blank">{{ uni.website }}</a></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Students Section -->
+        <div id="students-section" style="display: none;" class="mt-4">
+            <h4>All Students</h4>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for student in all_students %}
+                    <tr>
+                        <td>{{ student.name }}</td>
+                        <td>{{ student.email }}</td>
+                        <td>{{ student.phone or 'N/A' }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+
+        </div>
+    </div>
+</div>
+
+<!-- Add University Modal -->
+<div class="modal fade" id="addUniversityModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add New University</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form method="POST" action="{{ url_for('add_university') }}">
+                    <div class="mb-3">
+                        <label for="uni_name" class="form-label">University Name</label>
+                        <input type="text" class="form-control" id="uni_name" name="name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="uni_country" class="form-label">Country</label>
+                        <input type="text" class="form-control" id="uni_country" name="country" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="uni_ranking" class="form-label">Ranking (Optional)</label>
+                        <input type="number" class="form-control" id="uni_ranking" name="ranking">
+                    </div>
+                    <div class="mb-3">
+                        <label for="uni_website" class="form-label">Website (Optional)</label>
+                        <input type="url" class="form-control" id="uni_website" name="website">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Add University</button>
+                    </div>
+                </form>
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Program Modal -->
+<div class="modal fade" id="addProgramModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add New Program</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form method="POST" action="{{ url_for('add_program') }}">
+                    <div class="mb-3">
+                        <label for="prog_university" class="form-label">University</label>
+                        <select class="form-select" id="prog_university" name="university_id" required>
+                            <option value="">Select University</option>
+                            {% for uni in all_universities %}
+                                <option value="{{ uni.id }}">{{ uni.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="prog_name" class="form-label">Program Name</label>
+                        <input type="text" class="form-control" id="prog_name" name="name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="prog_type" class="form-label">Course Type</label>
+                        <select class="form-select" id="prog_type" name="course_type" required>
+                            <option value="">Select Type</option>
+                            <option value="Masters">Masters</option>
+                            <option value="PhD">PhD</option>
+                            <option value="Bachelors">Bachelors</option>
+                            <option value="Certificate">Certificate</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="prog_deadline" class="form-label">Application Deadline</label>
+                        <input type="date" class="form-control" id="prog_deadline" name="deadline" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="prog_duration" class="form-label">Duration</label>
+                        <input type="text" class="form-control" id="prog_duration" name="duration" placeholder="e.g., 2 years">
+                    </div>
+                    <div class="mb-3">
+                        <label for="prog_tuition" class="form-label">Tuition Fees ($)</label>
+                        <input type="number" class="form-control" id="prog_tuition" name="tuition_fees">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-success">Add Program</button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+function viewApplication(appId) {
+    alert('View application details for ID: ' + appId);
+}
+
+function updateApplicationStatus(appId) {
+    alert('Update application status for ID: ' + appId);
+}
+
+function showSection(sectionId) {
+    // Sections to toggle
+    const sections = ['dashboard-section', 'universities-section', 'students-section'];
+
+    // Hide all sections
+    sections.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.style.display = 'none';
+    });
+
+    // Show selected section
+    const selected = document.getElementById(sectionId);
+    if (selected) {
+        selected.style.display = 'block';
+    }
+}
+</script>
+{% endblock %}

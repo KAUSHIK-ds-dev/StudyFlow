@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+
+{% block title %}StudyFlow - Higher Study Management System{% endblock %}
+
+{% block content %}
+<div class="hero-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h1 class="display-4 fw-bold mb-4">
+                    Your Journey to Higher Education Starts Here
+                </h1>
+                <p class="lead mb-4">
+                    Streamline your university applications, track deadlines, manage documents, 
+                    and discover scholarships all in one place.
+                </p>
+                <div class="d-flex gap-3">
+                    <a href="{{ url_for('register') }}" class="btn btn-light btn-lg px-4">
+                        <i class="fas fa-user-plus me-2"></i>Get Started
+                    </a>
+                    <a href="{{ url_for('login') }}" class="btn btn-outline-light btn-lg px-4">
+                        <i class="fas fa-sign-in-alt me-2"></i>Sign In
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-6 text-center">
+                <i class="fas fa-graduation-cap" style="font-size: 12rem; opacity: 0.3;"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container py-5">
+    <div class="row text-center mb-5">
+        <div class="col-12">
+            <h2 class="display-5 fw-bold mb-3">Everything You Need for Your Applications</h2>
+            <p class="lead text-muted">Comprehensive tools to manage your higher education journey</p>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card h-100 text-center">
+                <div class="card-body">
+                    <div class="feature-icon mx-auto">
+                        <i class="fas fa-university"></i>
+                    </div>
+                    <h5 class="card-title">University Search</h5>
+                    <p class="card-text">
+                        Discover universities and programs worldwide with advanced filtering options.
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card h-100 text-center">
+                <div class="card-body">
+                    <div class="feature-icon mx-auto">
+                        <i class="fas fa-tasks"></i>
+                    </div>
+                    <h5 class="card-title">Application Tracking</h5>
+                    <p class="card-text">
+                        Keep track of all your applications with color-coded status updates.
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card h-100 text-center">
+                <div class="card-body">
+                    <div class="feature-icon mx-auto">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <h5 class="card-title">Document Management</h5>
+                    <p class="card-text">
+                        Upload and organize all your documents, request LORs from faculty.
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card h-100 text-center">
+                <div class="card-body">
+                    <div class="feature-icon mx-auto">
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
+                    <h5 class="card-title">Deadline Calendar</h5>
+                    <p class="card-text">
+                        Never miss a deadline with our integrated calendar system.
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card h-100 text-center">
+                <div class="card-body">
+                    <div class="feature-icon mx-auto">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h5 class="card-title">Test Score Tracking</h5>
+                    <p class="card-text">
+                        Manage your GRE, TOEFL, IELTS and other test scores in one place.
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card h-100 text-center">
+                <div class="card-body">
+                    <div class="feature-icon mx-auto">
+                        <i class="fas fa-award"></i>
+                    </div>
+                    <h5 class="card-title">Scholarship Discovery</h5>
+                    <p class="card-text">
+                        Find and save scholarships that match your profile and interests.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-5">
+        <div class="col-12 text-center">
+            <h3 class="mb-4">Ready to Begin Your Journey?</h3>
+            <a href="{{ url_for('register') }}" class="btn btn-primary btn-lg px-5">
+                <i class="fas fa-rocket me-2"></i>Start Now - It's Free!
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
